@@ -3,6 +3,12 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import missingno as msno
+
+
+#visualize missing values
+import missingno as msno
+msno.bar(df)
 
 
 
@@ -529,3 +535,68 @@ def bivariate_analysis_num_cat(df, numerical_col, categorical_col):
 
     plt.tight_layout()
     plt.show()
+
+
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+import squarify  # For treemaps
+
+def bivariate_analysis_cat_cat(df, cat_col1, cat_col2):
+    """
+    Perform bivariate analysis between two categorical columns.
+    
+    Parameters:
+    df (pd.DataFrame): DataFrame containing the data.
+    cat_col1 (str): Name of the first categorical column.
+    cat_col2 (str): Name of the second categorical column.
+    
+    Returns:
+    None
+    """
+    # Check if columns exist
+    if cat_col1 not in df.columns or cat_col2 not in df.columns:
+        raise ValueError(f"Columns '{cat_col1}' or '{cat_col2}' do not exist in the DataFrame")
+
+    # Create a contingency table (crosstab)
+    contingency_table = pd.crosstab(df[cat_col1], df[cat_col2])
+    print("Contingency Table:")
+    print(contingency_table)
+
+    # Set up the figure for plots
+    plt.figure(figsize=(18, 12))
+
+    # Heatmap of the contingency table
+    plt.subplot(2, 2, 1)
+    sns.heatmap(contingency_table, annot=True, fmt='d', cmap='viridis')
+    plt.title(f'Heatmap: {cat_col1} vs {cat_col2}')
+    plt.xlabel(cat_col2)
+    plt.ylabel(cat_col1)
+
+    # Stacked Bar Plot
+    plt.subplot(2, 2, 2)
+    contingency_table.plot(kind='bar', stacked=True, colormap='viridis', ax=plt.gca())
+    plt.title(f'Stacked Bar Plot: {cat_col1} vs {cat_col2}')
+    plt.xlabel(cat_col1)
+    plt.ylabel('Counts')
+    plt.xticks(rotation=45)
+
+    # Treemap
+    plt.subplot(2, 2, 3)
+    sizes = contingency_table.values.flatten()
+    labels = [f"{i}\n{j}" for i in contingency_table.index for j in contingency_table.columns]
+    squarify.plot(sizes=sizes, label=labels, alpha=.7, color=sns.color_palette('viridis', len(sizes)))
+    plt.title(f'Treemap: {cat_col1} vs {cat_col2}')
+    plt.axis('off')  # Hide the axes
+
+    plt.tight_layout()
+    plt.show()
+
+
+
+# Identify and view duplicate rows
+duplicates = df[df.duplicated(keep=False)]  # keep=False shows all duplicates    
+
+
+#warnings
+import warnings;warnings.filterwarnings('ignore')

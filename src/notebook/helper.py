@@ -422,6 +422,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from scipy.stats import pearsonr
 
+
 def bivariate_analysis_num_num(df, col1, col2):
     """
     Perform bivariate analysis between two numerical columns of a DataFrame.
@@ -483,6 +484,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+import numpy as np
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
 def bivariate_analysis_num_cat(df, numerical_col, categorical_col):
     """
     Perform bivariate analysis between a numerical and a categorical column.
@@ -500,10 +506,10 @@ def bivariate_analysis_num_cat(df, numerical_col, categorical_col):
         raise ValueError(f"Columns '{numerical_col}' or '{categorical_col}' do not exist in the DataFrame")
 
     # Set up the figure and axes
-    plt.figure(figsize=(18, 12))
+    plt.figure(figsize=(20, 18))
 
     # Bar Plot (Mean of Numerical Data by Category)
-    plt.subplot(2, 2, 1)
+    plt.subplot(3, 2, 1)
     sns.barplot(x=categorical_col, y=numerical_col, data=df, estimator=np.mean, ci=None, palette='viridis')
     plt.title(f'Bar Plot: Mean {numerical_col} by {categorical_col}')
     plt.xlabel(categorical_col)
@@ -511,24 +517,40 @@ def bivariate_analysis_num_cat(df, numerical_col, categorical_col):
     plt.xticks(rotation=45)
 
     # Box Plot
-    plt.subplot(2, 2, 2)
+    plt.subplot(3, 2, 2)
     sns.boxplot(x=categorical_col, y=numerical_col, data=df, palette='viridis')
     plt.title(f'Box Plot: {numerical_col} by {categorical_col}')
     plt.xlabel(categorical_col)
     plt.ylabel(numerical_col)
     plt.xticks(rotation=45)
 
+    # Violin Plot
+    plt.subplot(3, 2, 3)
+    sns.violinplot(x=categorical_col, y=numerical_col, data=df, palette='viridis')
+    plt.title(f'Violin Plot: {numerical_col} by {categorical_col}')
+    plt.xlabel(categorical_col)
+    plt.ylabel(numerical_col)
+    plt.xticks(rotation=45)
+
     # KDE Plot
-    plt.subplot(2, 2, 3)
-    sns.kdeplot(data=df, x=numerical_col, hue=categorical_col, common_norm=False, palette='viridis')
+    plt.subplot(3, 2, 4)
+    sns.kdeplot(data=df, x=numerical_col, hue=categorical_col, common_norm=False, palette='viridis', fill=True)
     plt.title(f'KDE Plot: {numerical_col} by {categorical_col}')
     plt.xlabel(numerical_col)
     plt.ylabel('Density')
 
-    # Violin Plot
-    plt.subplot(2, 2, 4)
-    sns.violinplot(x=categorical_col, y=numerical_col, data=df, palette='viridis')
-    plt.title(f'Violin Plot: {numerical_col} by {categorical_col}')
+    # Swarm Plot
+    plt.subplot(3, 2, 5)
+    sns.swarmplot(x=categorical_col, y=numerical_col, data=df, color='k', alpha=0.5)
+    plt.title(f'Swarm Plot: {numerical_col} by {categorical_col}')
+    plt.xlabel(categorical_col)
+    plt.ylabel(numerical_col)
+    plt.xticks(rotation=45)
+
+    # Strip Plot
+    plt.subplot(3, 2, 6)
+    sns.stripplot(x=categorical_col, y=numerical_col, data=df, jitter=True, palette='viridis', alpha=0.6)
+    plt.title(f'Strip Plot: {numerical_col} by {categorical_col}')
     plt.xlabel(categorical_col)
     plt.ylabel(numerical_col)
     plt.xticks(rotation=45)
@@ -600,3 +622,37 @@ duplicates = df[df.duplicated(keep=False)]  # keep=False shows all duplicates
 
 #warnings
 import warnings;warnings.filterwarnings('ignore')
+
+
+
+# -----------------------------------------------------------------------------------------------------------------------------------
+
+# Pair Plot: Use a pair plot for a quick overview of relationships between several numerical variables and the target.
+# multi-variate
+
+sns.pairplot(data_df_v2, vars=other_numerical_cols + ['content.onRoadPrice'], diag_kind='kde')
+plt.show()
+
+
+
+
+# Facet Grid: Use sns.FacetGrid to visualize the relationship of multiple categorical features with the target variable.
+# multi-variate
+
+# To use sns.FacetGrid with multiple categorical columns for visualizing content.onRoadPrice,
+# we need to create a single grid that visualizes all categorical columns at once.
+
+# Melt the DataFrame to long format for FacetGrid
+melted_df = data_df_v2.melt(id_vars='content.onRoadPrice', value_vars=categorical_columns, 
+                             var_name='Categorical Column', value_name='Category')
+
+# Create the FacetGrid
+g = sns.FacetGrid(melted_df, col='Categorical Column', col_wrap=4, height=4)
+g.map(sns.boxplot, 'Category', 'content.onRoadPrice')
+g.set_titles(col_template="{col_name}")
+plt.subplots_adjust(top=0.9)
+g.fig.suptitle('Boxplots of content.onRoadPrice by Categorical Variables', fontsize=16)
+plt.xticks(rotation=45)
+plt.show()
+
+# ---------------------------------------------------------------------------------------------------------------------------------------

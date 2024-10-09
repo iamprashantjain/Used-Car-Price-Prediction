@@ -656,3 +656,84 @@ plt.xticks(rotation=45)
 plt.show()
 
 # ---------------------------------------------------------------------------------------------------------------------------------------
+#check corelation of numerical column with other columns
+
+
+# List of other numerical columns to include
+other_numerical_cols = [
+    'content.onRoadPrice',
+    'content.ownerNumber',
+    'content.odometerReading',
+    'Airbags',
+    'NumberOfSpeakers',
+    'Displacementcc',
+    'Cylinders',
+    'GearBoxNumberOfGears',
+    'NumberOfDiscBrakes',
+    'GroundClearancemm',
+    'SeatingCapacity',
+    'Bootspacelitres',
+    'Widthmm',
+    'Lengthmm',
+    'WheelBasemm',
+    'FueltankCapacitylitres',
+    'MaxPowerbhp',
+    'MaxPowerrpm',
+    'MaxTorqueNm',
+    'defects',
+    'repainted',
+    'MultifunctionDisplayScreenSizein',
+    'EntertainmentDisplayScreenSizein',
+    'content.fitnessUpto_months_remaining',
+    'content.insuranceExpiry_months_remaining',
+    'content.lastServicedAt_months_remaining'
+]
+
+# Filter the DataFrame to include only the specified numerical columns
+filtered_df = data_df_v2[other_numerical_cols]
+
+# Calculate the correlation matrix for the filtered DataFrame
+correlation_matrix = filtered_df.corr()
+
+# Sort the correlation values for 'Airbags'
+sorted_correlations = correlation_matrix['Airbags'].sort_values(ascending=False)
+
+# Create a DataFrame from the sorted correlations
+sorted_correlations_df = sorted_correlations.to_frame()
+
+# Create a heatmap focused on the correlation of Airbags
+plt.figure(figsize=(10, 6))
+plt.title('Correlation of Airbags with Other Numerical Features')
+
+# Plot the heatmap without annotations
+sns.heatmap(sorted_correlations_df, annot=False, cmap='coolwarm', fmt='.2f', square=True)
+
+# Show the plot
+plt.show()
+
+#----------------------------------------------------------------------------------------------
+
+
+#visualize the relationship of one specific categorical column with each of the other columns categorical & numerical
+
+# Define your target categorical column
+target_categorical_col = 'InstrumentPanelType'
+
+# Count plots for categorical columns
+for col in categorical_columns:
+    plt.figure(figsize=(10, 6))
+    sns.countplot(data=data_df_v2, x=target_categorical_col, hue=col)
+    plt.title(f'Count of {target_categorical_col} by {col}')
+    plt.xlabel(target_categorical_col)
+    plt.ylabel('Count')
+    plt.legend(title=col)
+    plt.show()
+
+# Box plots for numerical columns
+for col in other_numerical_cols:
+    plt.figure(figsize=(10, 6))
+    sns.boxplot(data=data_df_v2, x=target_categorical_col, y=col)
+    plt.title(f'Boxplot of {col} by {target_categorical_col}')
+    plt.xlabel(target_categorical_col)
+    plt.ylabel(col)
+    plt.show()
